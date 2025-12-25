@@ -1,30 +1,32 @@
 {
-  "name": "@magic/shapes",
+  "name": "magic-shapes-yonava",
   "version": "1.0.0",
-  "private": true,
-  "type": "module",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
   "exports": {
-    "./*": "./src/*"
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.cjs.js",
+      "types": "./dist/index.d.ts"
+    }
   },
   "scripts": {
-    "build:types": "tsc -b .",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build:types": "vue-tsc -b ."
   },
   "peerDependencies": {
     "vue": "^3.5.18"
   },
   "dependencies": {
-    "@magic/canvas": "workspace:*",
-    "@magic/utils": "workspace:*",
+    "@vueuse/core": "^13.6.0",
+    "magic-canvas-yonava": "^1.0.1",
+    "magic-utils-yonava": "^1.0.7",
     "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
-    "storybook": "^9.0.1",
-    "@storybook/vue3-vite": "^9.0.1",
+    "@types/node": "^24.8.1",
     "@types/tinycolor2": "^1.4.6",
-    "@vitejs/plugin-vue": "^5.0.5",
-    "vite": "^7.1.10",
-    "vue": "^3.5.18"
+    "ts-essentials": "^10.1.1",
+    "vue-tsc": "^3.1.1"
   }
 }

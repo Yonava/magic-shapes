@@ -1,0 +1,1 @@
+{"version":3,"file":"types.d.ts","sourceRoot":"","sources":["../../../../../src/shapes/ellipse/types.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EACV,WAAW,EACX,SAAS,EACT,MAAM,EACN,QAAQ,EACT,MAAM,oBAAoB,CAAC;AAE5B,MAAM,MAAM,aAAa,GAAG;IAC1B,OAAO,EAAE,MAAM,CAAC;IAChB,OAAO,EAAE,MAAM,CAAC;CACjB,GAAG,WAAW,GACb,SAAS,GACT,MAAM,GACN,QAAQ,CAAC"}

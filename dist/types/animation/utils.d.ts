@@ -1,0 +1,22 @@
+import type { CompiledTimeline } from './timeline/compile';
+import type { ActiveAnimation } from './types';
+/**
+ * returns the number of times the animation has completed as a float.
+ *
+ * @example
+ * const runs = getCurrentRunCount(animation)
+ * console.log(runs) // 2.5
+ * // "animation" is half way through its 3rd run
+ */
+export declare const getCurrentRunCount: ({ durationMs, startedAt, delayMs, }: Pick<ActiveAnimation & CompiledTimeline, 'startedAt' | 'durationMs' | 'delayMs'>) => number;
+/**
+ * returns the current progress through the active animation cycle, as a value between 0 and 1.
+ * Useful for determining how far along the animation is within its current run.
+ *
+ * @example
+ * const progress = getAnimationProgress(animation);
+ * console.log(progress) // 0.25
+ * // "animation" is 25% through its current cycle
+ */
+export declare const getAnimationProgress: ({ durationMs, startedAt, delayMs, }: Pick<ActiveAnimation & CompiledTimeline, 'startedAt' | 'durationMs' | 'delayMs'>) => number;
+//# sourceMappingURL=utils.d.ts.map

@@ -1,5 +1,5 @@
-import type { UnionToIntersection } from 'ts-essentials';
-import { getSchemaWithDefaults } from '../defaults/shapes';
+import type { UnionToIntersection } from "ts-essentials";
+import { getSchemaWithDefaults } from "../defaults/shapes";
 import type {
   EverySchemaProp,
   EverySchemaPropName,
@@ -8,14 +8,14 @@ import type {
   ShapeFactory,
   ShapeName,
   WithId,
-} from '../types';
-import { shapeProps } from '../types';
+} from "../types";
+import { shapeProps } from "../types";
 
-import { shapes } from '..';
-import { useAutoAnimate } from './autoAnimate';
-import { useDefineTimeline } from './timeline/define';
-import type { ActiveAnimation, LooseSchema } from './types';
-import { getAnimationProgress, getCurrentRunCount } from './utils';
+import { shapes } from "..";
+import { useAutoAnimate } from "./autoAnimate";
+import { useDefineTimeline } from "./timeline/define";
+import type { ActiveAnimation, LooseSchema } from "./types";
+import { getAnimationProgress, getCurrentRunCount } from "./utils";
 
 type ActiveAnimationsMap = Map<SchemaId, ActiveAnimation[]>;
 export type GetAnimatedSchema = (schemaId: SchemaId) => LooseSchema | undefined;
@@ -47,13 +47,13 @@ export const useAnimatedShapes = () => {
       const animations = activeAnimations.get(shapeId);
       if (!animations) return;
       const stillRunning = animations.filter(
-        (a) => a.timelineId !== timelineId,
+        (a) => a.timelineId !== timelineId
       );
       if (stillRunning.length === 0) return activeAnimations.delete(shapeId);
       activeAnimations.set(shapeId, stillRunning);
     },
-    pause: () => console.warn('not implemented'),
-    resume: () => console.warn('not implemented'),
+    pause: () => console.warn("not implemented"),
+    resume: () => console.warn("not implemented"),
   });
 
   /**
@@ -66,27 +66,33 @@ export const useAnimatedShapes = () => {
     let outputSchema = animations[0].schemaWithDefaults;
 
     if (!outputSchema) {
-      console.warn('animation set without a schema. this should never happen!');
+      console.warn("animation set without a schema. this should never happen!");
       return;
     }
 
     const shapeName = schemaIdToShapeName.get(schemaId);
     if (!shapeName) {
-      throw new Error('(Internal Error) Animation set without shape name mapping. this should never happen!');
+      throw new Error(
+        "(Internal Error) Animation set without shape name mapping. this should never happen!"
+      );
     }
 
     for (const animation of animations) {
       const timeline = timelineIdToTimeline.get(animation.timelineId);
-      if (!timeline) throw new Error('animation activated without a timeline!');
+      if (!timeline) throw new Error("animation activated without a timeline!");
 
       const animationWithTimeline = {
         ...timeline,
         ...animation,
       };
 
-      const { validShapes, timelineId } = animationWithTimeline
+      const { validShapes, timelineId } = animationWithTimeline;
       if (!validShapes.has(shapeName)) {
-        throw new Error(`(Internal Error) Attempted to apply inappropriate animation to schema! Animation timeline ${timelineId} only works for shapes ${Array.from(validShapes.keys())} but schema ${schemaId} is of shape ${shapeName}.`);
+        throw new Error(
+          `(Internal Error) Attempted to apply inappropriate animation to schema! Animation timeline ${timelineId} only works for shapes ${Array.from(
+            validShapes.keys()
+          )} but schema ${schemaId} is of shape ${shapeName}.`
+        );
       }
 
       // cleanup animation if expired
@@ -105,7 +111,7 @@ export const useAnimatedShapes = () => {
         const [propName, getAnimatedValue] = curr;
         acc[propName as EverySchemaPropName] = getAnimatedValue(
           outputSchema,
-          progress,
+          progress
         );
         return acc;
       }, {} as LooseSchema);
@@ -122,63 +128,64 @@ export const useAnimatedShapes = () => {
   const autoAnimate = useAutoAnimate(defineTimeline, getAnimatedSchema);
 
   const animatedFactory =
-    <T extends Omit<LooseSchema, 'id'>>(
+    <T extends Omit<LooseSchema, "id">>(
       factory: ShapeFactory<T>,
-      shapeName: ShapeName,
+      shapeName: ShapeName
     ): ShapeFactory<WithId<T>> =>
-      (schema) =>
-        new Proxy(factory(schema), {
-          get: (target, rawProp) => {
-            const prop = rawProp as keyof Shape;
-            if (!shapeProps.has(prop)) return target[prop];
+    (schema) =>
+      new Proxy(factory(schema), {
+        get: (target, rawProp) => {
+          const prop = rawProp as keyof Shape;
+          if (!shapeProps.has(prop)) return target[prop];
 
-            const animations = activeAnimations.get(schema.id);
+          const animations = activeAnimations.get(schema.id);
 
-            const defaultResolver:
-              | ((schema: LooseSchema) => LooseSchema)
-              | undefined = (getSchemaWithDefaults as any)?.[shapeName];
-            if (!defaultResolver)
-              throw new Error(`cant find defaults for ${shapeName}`);
-            const schemaWithDefaults = defaultResolver(schema);
+          const defaultResolver:
+            | ((schema: LooseSchema) => LooseSchema)
+            | undefined = (getSchemaWithDefaults as any)?.[shapeName];
+          if (!defaultResolver)
+            throw new Error(`cant find defaults for ${shapeName}`);
+          const schemaWithDefaults = defaultResolver(schema);
 
-            autoAnimate.captureSchemaState(schemaWithDefaults, shapeName);
+          autoAnimate.captureSchemaState(schemaWithDefaults, shapeName);
 
-            const targetMapSchema = autoAnimate.snapshotMap.get(schema.id);
-            if (targetMapSchema)
-              return factory(targetMapSchema as WithId<T>)[prop];
+          const targetMapSchema = autoAnimate.snapshotMap.get(schema.id);
+          if (targetMapSchema)
+            return factory(targetMapSchema as WithId<T>)[prop];
 
-            if (!animations || animations.length === 0) return target[prop];
-            if (!animations[0]?.schemaWithDefaults) animations[0].schemaWithDefaults = schemaWithDefaults;
+          if (!animations || animations.length === 0) return target[prop];
+          if (!animations[0]?.schemaWithDefaults)
+            animations[0].schemaWithDefaults = schemaWithDefaults;
 
-            if (prop === 'startTextAreaEdit')
-              return console.warn(
-                'shapes with active animations cannot spawn text inputs',
-              );
+          if (prop === "startTextAreaEdit")
+            return console.warn(
+              "shapes with active animations cannot spawn text inputs"
+            );
 
-            const hasShapeName = schemaIdToShapeName.get(schema.id);
-            if (!hasShapeName) schemaIdToShapeName.set(schema.id, shapeName);
+          const hasShapeName = schemaIdToShapeName.get(schema.id);
+          if (!hasShapeName) schemaIdToShapeName.set(schema.id, shapeName);
 
-            const animatedSchema = getAnimatedSchema(schema.id);
-            if (!animatedSchema) return target[prop];
+          const animatedSchema = getAnimatedSchema(schema.id);
+          if (!animatedSchema) return target[prop];
 
-            return factory(animatedSchema as WithId<T>)[prop];
-          },
-        });
+          return factory(animatedSchema as WithId<T>)[prop];
+        },
+      });
 
   return {
     shapes: {
-      arrow: animatedFactory(shapes.arrow, 'arrow'),
-      circle: animatedFactory(shapes.circle, 'circle'),
-      cross: animatedFactory(shapes.cross, 'cross'),
-      ellipse: animatedFactory(shapes.ellipse, 'ellipse'),
-      image: animatedFactory(shapes.image, 'image'),
-      line: animatedFactory(shapes.line, 'line'),
-      rect: animatedFactory(shapes.rect, 'rect'),
-      scribble: animatedFactory(shapes.scribble, 'scribble'),
-      square: animatedFactory(shapes.square, 'square'),
-      star: animatedFactory(shapes.star, 'star'),
-      triangle: animatedFactory(shapes.triangle, 'triangle'),
-      uturn: animatedFactory(shapes.uturn, 'uturn'),
+      arrow: animatedFactory(shapes.arrow, "arrow"),
+      circle: animatedFactory(shapes.circle, "circle"),
+      cross: animatedFactory(shapes.cross, "cross"),
+      ellipse: animatedFactory(shapes.ellipse, "ellipse"),
+      image: animatedFactory(shapes.image, "image"),
+      line: animatedFactory(shapes.line, "line"),
+      rect: animatedFactory(shapes.rect, "rect"),
+      scribble: animatedFactory(shapes.scribble, "scribble"),
+      square: animatedFactory(shapes.square, "square"),
+      star: animatedFactory(shapes.star, "star"),
+      triangle: animatedFactory(shapes.triangle, "triangle"),
+      uturn: animatedFactory(shapes.uturn, "uturn"),
     },
     defineTimeline,
     autoAnimate: { captureFrame: autoAnimate.captureFrame },
@@ -193,48 +200,68 @@ export const useAnimatedShapes = () => {
      * WARNING: Calling this on a property that the imperative track itself resolves
      * will crash your app!
      */
-    getAnimatedProp: <T extends EverySchemaPropName>(schemaId: string, inputPropName: T) => {
+    getAnimatedProp: <T extends EverySchemaPropName>(
+      schemaId: string,
+      inputPropName: T
+    ) => {
       const animations = activeAnimations.get(schemaId);
       if (!animations || animations.length === 0) {
-        throw new Error(`Schema with id ${schemaId} has no running animations`)
-      };
+        throw new Error(`Schema with id ${schemaId} has no running animations`);
+      }
 
-      const { schemaWithDefaults } = animations[0]
+      const { schemaWithDefaults } = animations[0];
 
       if (!schemaWithDefaults) {
-        throw new Error('(Internal Error) Animation set without a schema. this should never happen!');
+        throw new Error(
+          "(Internal Error) Animation set without a schema. this should never happen!"
+        );
       }
 
       if (!(inputPropName in schemaWithDefaults)) {
-        throw new Error(`(User Error) Input prop name ${inputPropName} not a property on schema (${Object.keys(schemaWithDefaults)})`)
+        throw new Error(
+          `(User Error) Input prop name ${inputPropName} not a property on schema (${Object.keys(
+            schemaWithDefaults
+          )})`
+        );
       }
 
       const shapeName = schemaIdToShapeName.get(schemaId);
       if (!shapeName) {
-        throw new Error('(Internal Error) Animation set without shape name mapping. this should never happen!');
+        throw new Error(
+          "(Internal Error) Animation set without shape name mapping. this should never happen!"
+        );
       }
 
-      let propVal = schemaWithDefaults[inputPropName] as UnionToIntersection<EverySchemaProp>[T]
+      let propVal = schemaWithDefaults[
+        inputPropName
+      ] as UnionToIntersection<EverySchemaProp>[T];
 
       for (const animation of animations) {
         const timeline = timelineIdToTimeline.get(animation.timelineId);
-        if (!timeline) throw new Error('(Internal Error) Animation activated without a timeline!');
+        if (!timeline)
+          throw new Error(
+            "(Internal Error) Animation activated without a timeline!"
+          );
 
         const animationWithTimeline = {
           ...timeline,
           ...animation,
         };
 
-        const { validShapes, timelineId } = animationWithTimeline
+        const { validShapes, timelineId } = animationWithTimeline;
         if (!validShapes.has(shapeName)) {
-          throw new Error(`(Internal Error) Attempted to apply inappropriate animation to schema! Animation timeline ${timelineId} only works for shapes ${Array.from(validShapes.keys())} but schema ${schemaId} is of shape ${shapeName}.`);
+          throw new Error(
+            `(Internal Error) Attempted to apply inappropriate animation to schema! Animation timeline ${timelineId} only works for shapes ${Array.from(
+              validShapes.keys()
+            )} but schema ${schemaId} is of shape ${shapeName}.`
+          );
         }
 
         const { properties } = animationWithTimeline;
         const progress = getAnimationProgress(animationWithTimeline);
 
-        const fn = properties[inputPropName as string]
-        propVal = fn(schemaWithDefaults, progress)
+        const fn = properties[inputPropName as string];
+        propVal = fn(schemaWithDefaults, progress);
       }
 
       return propVal;

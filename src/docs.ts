@@ -1,23 +1,22 @@
-import { getDevicePixelRatio } from '@magic/canvas/camera/utils';
-import type { CrossSchema } from './shapes/cross/types';
-import { rect } from './shapes/rect';
-import type { RectSchema } from './shapes/rect/types';
-import { square } from './shapes/square';
-import type { SquareSchema } from './shapes/square/types';
-import { getCtx } from '@magic/utils/ctx';
-import { generateId } from '@magic/utils/id';
+import type { CrossSchema } from "./shapes/cross/types";
+import { rect } from "./shapes/rect";
+import type { RectSchema } from "./shapes/rect/types";
+import { square } from "./shapes/square";
+import type { SquareSchema } from "./shapes/square/types";
 
-import { defineComponent, h, onMounted, watch } from 'vue';
+import { defineComponent, h, onMounted, watch } from "vue";
 
-import { cross } from './shapes/cross';
-import type { ShapeFactory } from './types';
-import type { AnchorPoint } from './types/schema';
-import type { BoundingBox, Coordinate } from './types/utility';
+import { cross } from "./shapes/cross";
+import type { ShapeFactory } from "./types";
+import type { AnchorPoint } from "./types/schema";
+import type { BoundingBox, Coordinate } from "./types/utility";
+import { generateId, getCtx } from "magic-utils-yonava";
+import { getDevicePixelRatio } from "magic-canvas-yonava";
 
 const atMarkerSchema = (at: Coordinate): CrossSchema => ({
   at,
   size: 5,
-  fillColor: 'red',
+  fillColor: "red",
   lineWidth: 1,
 });
 
@@ -26,7 +25,7 @@ const atMarker = (at: Coordinate) => cross(atMarkerSchema(at));
 const centerMarkerSchema = (at: Coordinate): CrossSchema => ({
   at,
   size: 5,
-  fillColor: 'purple',
+  fillColor: "purple",
   lineWidth: 1,
 });
 
@@ -36,9 +35,9 @@ const boundingBoxMarkerSchema = (bb: BoundingBox): RectSchema => ({
   at: bb.at,
   width: bb.width,
   height: bb.height,
-  fillColor: 'transparent',
+  fillColor: "transparent",
   stroke: {
-    color: 'green',
+    color: "green",
     lineWidth: 1,
   },
 });
@@ -49,9 +48,9 @@ const boundingBoxMarker = (bb: BoundingBox) =>
 const measuringStickSchema: SquareSchema = {
   at: { x: 0, y: 0 },
   size: 1008,
-  fillColor: 'transparent',
+  fillColor: "transparent",
   stroke: {
-    color: 'black',
+    color: "black",
     lineWidth: 4,
     dash: [10, 10],
   },
@@ -87,17 +86,17 @@ export const DEFAULT_STORIES = {
     args: {
       textArea: {
         textBlock: {
-          content: 'Hi!',
-          color: 'white',
+          content: "Hi!",
+          color: "white",
         },
-        color: 'blue',
+        color: "blue",
       },
     },
   },
   stroke: {
     args: {
       stroke: {
-        color: 'blue',
+        color: "blue",
         lineWidth: 10,
       },
     },
@@ -111,19 +110,19 @@ export const DEFAULT_STORIES = {
     args: {
       fillGradient: [
         {
-          color: 'red',
+          color: "red",
           offset: 0,
         },
         {
-          color: 'red',
+          color: "red",
           offset: 0.95,
         },
         {
-          color: 'blue',
+          color: "blue",
           offset: 0.96,
         },
         {
-          color: 'blue',
+          color: "blue",
           offset: 1,
         },
       ],
@@ -132,7 +131,7 @@ export const DEFAULT_STORIES = {
 } as const;
 
 export const createDocComponent = <T extends Record<string, unknown>>(
-  factory: ShapeFactory<T>,
+  factory: ShapeFactory<T>
 ): ReturnType<typeof defineComponent> =>
   defineComponent<T & DocMarkingOptions>({
     inheritAttrs: false,
@@ -165,8 +164,8 @@ export const createDocComponent = <T extends Record<string, unknown>>(
         shape.draw(ctx);
         if (showBoundingBoxMarker)
           boundingBoxMarker(shape.getBoundingBox()).draw(ctx);
-        if (showAtMarker && 'at' in props)
-          atMarker(props.at as AnchorPoint['at']).draw(ctx);
+        if (showAtMarker && "at" in props)
+          atMarker(props.at as AnchorPoint["at"]).draw(ctx);
         if (showCenterMarker) centerMarker(shape.getCenterPoint()).draw(ctx);
       };
 
@@ -174,7 +173,7 @@ export const createDocComponent = <T extends Record<string, unknown>>(
       watch(() => ({ ...props }), drawPreview);
 
       return () =>
-        h('canvas', {
+        h("canvas", {
           id: canvasId,
           width: 400,
           height: 400,
