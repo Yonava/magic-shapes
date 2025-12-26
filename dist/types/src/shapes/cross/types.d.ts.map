@@ -1,1 +1,0 @@
-{"version":3,"file":"types.d.ts","sourceRoot":"","sources":["../../../../../src/shapes/cross/types.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EACV,WAAW,EACX,YAAY,EACZ,SAAS,EACT,SAAS,EACT,QAAQ,EACR,QAAQ,EACT,MAAM,oBAAoB,CAAC;AAE5B,MAAM,MAAM,WAAW,GAAG;IACxB,IAAI,EAAE,MAAM,CAAC;CACd,GAAG,QAAQ,GACV,WAAW,GACX,QAAQ,GACR,SAAS,GACT,YAAY,GACZ,SAAS,CAAC"}

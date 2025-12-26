@@ -1,29 +1,28 @@
+import { type Color, isPlainObject } from "magic-utils-yonava";
 import {
   type EasingFunction,
   type EasingOption,
   easingOptionToFunction,
-} from '../../animation/easing';
+} from "../../animation/easing";
 import {
   interpolateColor,
   isColorString,
-} from '../../animation/interpolation/color';
-import { interpolateCoordinate } from '../../animation/interpolation/coordinate';
-import { interpolateNumber } from '../../animation/interpolation/number';
-import { interpolateTextArea } from '../../animation/interpolation/textArea';
-import type { AnimationKeyframe } from '../../animation/interpolation/types';
-import { resolveTextArea } from '../../text/defaults';
-import type { TextArea } from '../../text/types';
-import type { EverySchemaPropName, ShapeName } from '../../types';
-import type { Coordinate } from '../../types/utility';
-import type { Color } from '@magic/utils/colors';
-import { isPlainObject } from '@magic/utils/deepMerge';
+} from "../../animation/interpolation/color";
+import { interpolateCoordinate } from "../../animation/interpolation/coordinate";
+import { interpolateNumber } from "../../animation/interpolation/number";
+import { interpolateTextArea } from "../../animation/interpolation/textArea";
+import type { AnimationKeyframe } from "../../animation/interpolation/types";
+import { resolveTextArea } from "../../text/defaults";
+import type { TextArea } from "../../text/types";
+import type { EverySchemaPropName, ShapeName } from "../../types";
+import type { Coordinate } from "../../types/utility";
 
 import type {
   ImperativeTrack,
   Timeline,
   TimelinePlaybackDelay,
   TimelinePlaybackDuration,
-} from './define';
+} from "./define";
 
 /**
  * @param schema the non-altered schema of the shape being animated
@@ -56,14 +55,14 @@ type PropToAnimationKeyframe = Partial<
 // options like zod, we should use that instead of a hardcoded set of strings
 
 // schema property names which handle values that are text areas
-const TEXT_AREA_PROPS: Set<EverySchemaPropName> = new Set(['textArea']);
+const TEXT_AREA_PROPS: Set<EverySchemaPropName> = new Set(["textArea"]);
 // schema property names which handle values that are coordinates
-const COORD_PROPS: Set<EverySchemaPropName> = new Set(['at', 'start', 'end']);
+const COORD_PROPS: Set<EverySchemaPropName> = new Set(["at", "start", "end"]);
 
 export type CompileProp = (
   prop: EverySchemaPropName,
   propToAnimationKeyframes: PropToAnimationKeyframe,
-  easing: EasingFunction,
+  easing: EasingFunction
 ) => AnimationFunction;
 
 const DEFAULT_START = {
@@ -76,13 +75,13 @@ const DEFAULT_END = {
   value: (val: any) => val,
 } as const;
 
-const DEFAULT_EASING: EasingOption = 'linear';
+const DEFAULT_EASING: EasingOption = "linear";
 
 const isCustomInputObject = (obj: unknown) => {
   const isObj = isPlainObject(obj);
   if (!isObj) return false;
-  const hasValueProp = 'value' in obj;
-  const hasEasingProp = 'easing' in obj;
+  const hasValueProp = "value" in obj;
+  const hasEasingProp = "easing" in obj;
   const numOfProps = Object.keys(obj).length;
   return hasValueProp && numOfProps === (hasEasingProp ? 2 : 1);
 };
@@ -99,7 +98,7 @@ export const compileTimeline = (timeline: Timeline<any>): CompiledTimeline => {
 
   const propsInTimeline = [
     ...new Set(
-      rawTimelineKeyframes.map((kf) => Object.keys(kf.properties)).flat(),
+      rawTimelineKeyframes.map((kf) => Object.keys(kf.properties)).flat()
     ),
   ] as EverySchemaPropName[];
 
@@ -139,21 +138,21 @@ export const compileTimeline = (timeline: Timeline<any>): CompiledTimeline => {
   // TODO replace this with real object validation solutions like zod
   const isCoord = (
     propVal: unknown,
-    propName: EverySchemaPropName,
+    propName: EverySchemaPropName
   ): propVal is Coordinate => COORD_PROPS.has(propName);
   const isTextArea = (
     propVal: unknown,
-    propName: EverySchemaPropName,
+    propName: EverySchemaPropName
   ): propVal is TextArea => TEXT_AREA_PROPS.has(propName);
 
   const interpolationFns = [
     {
-      predicate: (propVal: unknown) => typeof propVal === 'number',
+      predicate: (propVal: unknown) => typeof propVal === "number",
       fn: interpolateNumber,
     },
     {
       predicate: (propVal: unknown): propVal is Color =>
-        typeof propVal === 'string' && isColorString(propVal),
+        typeof propVal === "string" && isColorString(propVal),
       fn: interpolateColor,
     },
     {
@@ -174,14 +173,14 @@ export const compileTimeline = (timeline: Timeline<any>): CompiledTimeline => {
       if (rawPropVal === undefined) return;
 
       const interpolation = interpolationFns.find(({ predicate }) =>
-        predicate(rawPropVal, propName),
+        predicate(rawPropVal, propName)
       );
       if (!interpolation)
         throw `cannot interpolate value: ${JSON.stringify(rawPropVal)}`;
 
       const keyframes = propToAnimationKeyframes[propName]!.map((kf) => {
         const getValue = () => {
-          if (typeof kf.value === 'function') {
+          if (typeof kf.value === "function") {
             return kf.value(rawPropVal, schemaWithDefaults);
           }
 
@@ -191,7 +190,7 @@ export const compileTimeline = (timeline: Timeline<any>): CompiledTimeline => {
         const value = getValue();
         // we do this check because for TS because partial fields do not error when
         // explicity set to undefined by the consumer
-        if (value === undefined) throw 'keyframe value cannot be undefined!';
+        if (value === undefined) throw "keyframe value cannot be undefined!";
 
         return {
           ...kf,
@@ -206,7 +205,7 @@ export const compileTimeline = (timeline: Timeline<any>): CompiledTimeline => {
         keyframes,
         getDefaultEasing(propName),
         // @ts-expect-error could make TS happy, but would make this verbose unfortunately
-        rawPropVal,
+        rawPropVal
       )(progress);
     };
   }
@@ -215,13 +214,14 @@ export const compileTimeline = (timeline: Timeline<any>): CompiledTimeline => {
   if (customInterpolations) {
     const allCustomInterpolations = Object.entries(customInterpolations) as [
       EverySchemaPropName,
-      ImperativeTrack<any, any>,
+      ImperativeTrack<any, any>
     ][];
     for (const [propName, interpolationOptions] of allCustomInterpolations) {
       const { easing: easingRaw, value } = interpolationOptions;
       const easing = easingRaw ?? getDefaultEasing(propName);
       const easingFn = easingOptionToFunction(easing);
-      tl.properties[propName] = (schemaWithDefaults, progress) => value(easingFn(progress), schemaWithDefaults);
+      tl.properties[propName] = (schemaWithDefaults, progress) =>
+        value(easingFn(progress), schemaWithDefaults);
     }
   }
 

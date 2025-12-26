@@ -1,1 +1,0 @@
-{"version":3,"file":"types.d.ts","sourceRoot":"","sources":["../../../../src/shapes/square/types.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,QAAQ,EAAE,MAAM,eAAe,CAAC;AAE9C,OAAO,KAAK,EAAE,UAAU,EAAE,MAAM,eAAe,CAAC;AAEhD,MAAM,MAAM,YAAY,GAAG,QAAQ,CACjC,IAAI,CAAC,UAAU,EAAE,OAAO,GAAG,QAAQ,CAAC,GAAG;IACrC,IAAI,EAAE,MAAM,CAAC;CACd,CACF,CAAC"}

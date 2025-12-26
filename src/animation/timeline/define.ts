@@ -1,13 +1,13 @@
 // @typescript-eslint/no-unused-vars reports unused even if referenced in jsdoc
 // eslint-disable-next-line
-import type { EverySchemaProp, ShapeNameToSchema, WithId } from '../../types';
-import { generateId } from '@magic/utils/id';
-import type { DeepReadonly, DeepRequired } from 'ts-essentials';
+import type { EverySchemaProp, ShapeNameToSchema, WithId } from "../../types";
+import type { DeepReadonly, DeepRequired } from "ts-essentials";
 
-import type { EasingOption } from '../easing';
-import { type CompiledTimeline, compileTimeline } from './compile';
-import type { SchemaWithDefaults } from '../../defaults/shapes';
-import { TextArea } from '../../text/types';
+import type { EasingOption } from "../easing";
+import { type CompiledTimeline, compileTimeline } from "./compile";
+import type { SchemaWithDefaults } from "../../defaults/shapes";
+import { TextArea } from "../../text/types";
+import { generateId } from "magic-utils-yonava";
 
 type ShapeTarget = {
   /**
@@ -33,7 +33,9 @@ type TimelinePlayOptions = ShapeTarget & {
 };
 
 export type UseDefineTimelineOptions = {
-  play: (options: TimelinePlayOptions & IdField & Pick<Timeline<any>, 'synchronize'>) => void;
+  play: (
+    options: TimelinePlayOptions & IdField & Pick<Timeline<any>, "synchronize">
+  ) => void;
   pause: (options: ShapeTarget & IdField) => void;
   resume: (options: ShapeTarget & IdField) => void;
   stop: (options: ShapeTarget & IdField) => void;
@@ -67,22 +69,24 @@ type TimelineControls = {
 
 type TextAreaCustomOption<TSchema> = (
   propValue: TextArea,
-  schema: TSchema,
+  schema: TSchema
 ) => TextArea;
 
 type CustomOption<TProp, TSchema> = (
   propValue: DeepRequired<TProp>,
-  schema: TSchema,
+  schema: TSchema
 ) => TProp;
 
 type WithCustomOption<TSchema> = {
-  [TProp in keyof TSchema]: TProp extends 'textArea'
-  ? TSchema[TProp] | TextAreaCustomOption<TSchema>
-  : TSchema[TProp] | CustomOption<TSchema[TProp], TSchema>;
+  [TProp in keyof TSchema]: TProp extends "textArea"
+    ? TSchema[TProp] | TextAreaCustomOption<TSchema>
+    : TSchema[TProp] | CustomOption<TSchema[TProp], TSchema>;
 };
 
 type WithObjectOption<TSchema> = {
-  [TProp in keyof TSchema]: TSchema[TProp] | { value: TSchema[TProp]; easing?: EasingOption };
+  [TProp in keyof TSchema]:
+    | TSchema[TProp]
+    | { value: TSchema[TProp]; easing?: EasingOption };
 };
 
 type TimelinePropsWithCustomOption<TSchema> = WithObjectOption<
@@ -133,21 +137,23 @@ export type Timeline<T extends keyof ShapeNameToSchema> = DeepReadonly<
   {
     forShapes: T[];
     keyframes?: TimelineKeyframe<SchemaWithDefaults[NoInfer<T>]>[];
-    easing?: Partial<Record<keyof SchemaWithDefaults[NoInfer<T>], EasingOption>>;
+    easing?: Partial<
+      Record<keyof SchemaWithDefaults[NoInfer<T>], EasingOption>
+    >;
     /**
      * allow shapes to animate in sync even when invoking {@link TimelineControls.play} at different times
      */
     synchronize?: boolean;
   } & TimelinePlaybackDuration &
-  TimelinePlaybackDelay &
-  TimelineCustomInterpolations<SchemaWithDefaults[NoInfer<T>]>
+    TimelinePlaybackDelay &
+    TimelineCustomInterpolations<SchemaWithDefaults[NoInfer<T>]>
 >;
 
 export const useDefineTimeline = (controls: UseDefineTimelineOptions) => {
   const timelineIdToTimeline: Map<TimelineId, CompiledTimeline> = new Map();
 
   const defineTimeline = <T extends keyof ShapeNameToSchema>(
-    timeline: Timeline<T>,
+    timeline: Timeline<T>
   ): TimelineControls => {
     const timelineId = generateId();
 
@@ -155,7 +161,12 @@ export const useDefineTimeline = (controls: UseDefineTimelineOptions) => {
     timelineIdToTimeline.set(timelineId, compiledTimeline);
 
     return {
-      play: (opts) => controls.play({ ...opts, timelineId, synchronize: timeline.synchronize }),
+      play: (opts) =>
+        controls.play({
+          ...opts,
+          timelineId,
+          synchronize: timeline.synchronize,
+        }),
       pause: (opts) => controls.pause({ ...opts, timelineId }),
       resume: (opts) => controls.resume({ ...opts, timelineId }),
       stop: (opts) => controls.stop({ ...opts, timelineId }),
@@ -171,4 +182,4 @@ export const useDefineTimeline = (controls: UseDefineTimelineOptions) => {
 
 export type DefineTimeline = ReturnType<
   typeof useDefineTimeline
->['defineTimeline'];
+>["defineTimeline"];

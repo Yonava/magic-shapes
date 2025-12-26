@@ -40,3 +40,5 @@ export {
   triangle,
   uturn,
 };
+
+export { useAnimatedShapes } from "./animation";

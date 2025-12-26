@@ -1,16 +1,16 @@
-import { getClientCoordinates } from '@magic/canvas/coordinates';
-import { isPointInBoundingBox } from '../helpers';
-import type { BoundingBox } from '../types/utility';
-import type { DeepRequired } from 'ts-essentials';
+import { isPointInBoundingBox } from "../helpers";
+import type { BoundingBox } from "../types/utility";
+import type { DeepRequired } from "ts-essentials";
 
-import { getTextDimensions } from './getTextDimensions';
-import { HORIZONTAL_TEXT_PADDING } from './text';
-import type { OnTextAreaBlur, TextAreaWithAnchorPoint } from './types';
+import { getTextDimensions } from "./getTextDimensions";
+import { HORIZONTAL_TEXT_PADDING } from "./text";
+import type { OnTextAreaBlur, TextAreaWithAnchorPoint } from "./types";
+import { getClientCoordinates } from "magic-canvas-yonava";
 
 export const createTextarea = (
   ctx: CanvasRenderingContext2D,
   onTextAreaBlur: OnTextAreaBlur,
-  textArea: DeepRequired<TextAreaWithAnchorPoint>,
+  textArea: DeepRequired<TextAreaWithAnchorPoint>
 ) => {
   const { at, textBlock, activeColor: bgColor } = textArea;
 
@@ -20,40 +20,40 @@ export const createTextarea = (
   const { color: textColor, content, fontSize, fontWeight } = textBlock;
 
   const inputWidth = Math.round(
-    Math.max(fontSize * 2, width + HORIZONTAL_TEXT_PADDING) * zoom,
+    Math.max(fontSize * 2, width + HORIZONTAL_TEXT_PADDING) * zoom
   );
   const inputHeight = Math.round(fontSize * 2 * zoom);
 
-  const input = document.createElement('textarea');
+  const input = document.createElement("textarea");
 
-  input.style.position = 'absolute';
+  input.style.position = "absolute";
   input.style.left = `${clientX}px`;
   input.style.top = `${clientY}px`;
   input.style.width = `${Math.round(inputWidth)}px`;
   input.style.height = `${Math.round(inputHeight)}px`;
-  input.style.zIndex = '1000';
+  input.style.zIndex = "1000";
 
-  input.style.resize = 'none';
+  input.style.resize = "none";
 
-  input.style.overflow = 'hidden';
-  input.style.border = 'none';
+  input.style.overflow = "hidden";
+  input.style.border = "none";
 
-  input.style.padding = '0';
-  input.style.margin = '0';
+  input.style.padding = "0";
+  input.style.margin = "0";
 
   input.style.paddingTop = `${Math.round(descent * zoom)}px`;
 
   input.style.fontSize = `${fontSize * zoom}px`;
   input.style.color = textColor;
   input.style.backgroundColor = bgColor;
-  input.style.fontFamily = 'Arial';
-  input.style.textAlign = 'center';
+  input.style.fontFamily = "Arial";
+  input.style.textAlign = "center";
   input.style.fontWeight = fontWeight;
-  input.style.outline = 'none';
-  input.style.boxSizing = 'border-box';
+  input.style.outline = "none";
+  input.style.boxSizing = "border-box";
 
   // no text wrapping
-  input.style.whiteSpace = 'nowrap';
+  input.style.whiteSpace = "nowrap";
 
   input.value = content;
 
@@ -72,8 +72,8 @@ export const createTextarea = (
   const removeInput = () => {
     input.onblur = null;
     onTextAreaBlur(input.value);
-    document.removeEventListener('mousedown', handleMouseDown);
-    document.removeEventListener('wheel', removeInput);
+    document.removeEventListener("mousedown", handleMouseDown);
+    document.removeEventListener("wheel", removeInput);
 
     setTimeout(() => {
       // setTimeout to allow canvas time to update
@@ -85,7 +85,7 @@ export const createTextarea = (
 
   input.onkeydown = (ev) => {
     ev.stopPropagation();
-    if (ev.key === 'Enter') {
+    if (ev.key === "Enter") {
       ev.preventDefault();
       removeInput();
     }
@@ -109,8 +109,8 @@ export const createTextarea = (
     if (!clickedInside) removeInput();
   };
 
-  document.addEventListener('mousedown', handleMouseDown);
-  document.addEventListener('wheel', removeInput, { passive: true });
+  document.addEventListener("mousedown", handleMouseDown);
+  document.addEventListener("wheel", removeInput, { passive: true });
 
   document.body.appendChild(input);
   setTimeout(() => {

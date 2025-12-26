@@ -1,10 +1,10 @@
-import { Coordinate } from '../../types/utility';
-import { TextArea } from '../../text/types';
+import { Coordinate } from "../../types/utility";
+import { TextArea } from "../../text/types";
 
-import type { DeepRequired } from 'ts-essentials';
+import type { DeepRequired } from "ts-essentials";
 
-import type { EasingFunction } from '../easing';
-import { Color } from '@magic/utils/colors';
+import type { EasingFunction } from "../easing";
+import type { Color } from "magic-utils-yonava";
 
 /**
  * Represents a keyframe in an animation, defining the value at a specific point in the animation timeline.
@@ -38,7 +38,7 @@ export type AnimationKeyframe<T> = {
 export type InterpolationFunction<T> = (
   keyframes: AnimationKeyframe<T>[],
   defaultEasing: EasingFunction,
-  fallbackValue: T,
+  fallbackValue: T
 ) => (progress: number) => T;
 
 export type NumberKeyframe = AnimationKeyframe<number>;

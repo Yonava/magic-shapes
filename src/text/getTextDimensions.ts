@@ -1,15 +1,14 @@
-import { getCtx } from '@magic/utils/ctx';
+import { getCtx } from "magic-utils-yonava";
+import type { TextBlock } from "./types";
 
-import type { TextBlock } from './types';
-
-const canvas = document.createElement('canvas');
+const canvas = document.createElement("canvas");
 const ctx = getCtx(canvas);
 
 canvas.width = 1;
 canvas.height = 1;
 
-ctx.textAlign = 'center';
-ctx.textBaseline = 'middle';
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
 
 export const getTextDimensions = (text: Required<TextBlock>) => {
   const { content, fontSize, fontWeight, fontFamily } = text;

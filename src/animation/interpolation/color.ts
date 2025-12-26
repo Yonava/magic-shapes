@@ -1,7 +1,7 @@
-import type { Color } from '@magic/utils/colors';
-import tinycolor from 'tinycolor2';
+import tinycolor from "tinycolor2";
 
-import type { InterpolationFunction } from './types';
+import type { InterpolationFunction } from "./types";
+import type { Color } from "magic-utils-yonava";
 
 /**
  * @returns true if the supplied string can be parsed as a color
@@ -16,7 +16,7 @@ export const interpolateColor: InterpolationFunction<Color> =
     const validColors = keyframes.map((kf) => tinycolor(kf.value));
 
     if (!validColors.every(isColor)) {
-      throw new Error('Invalid color provided in keyframe.');
+      throw new Error("Invalid color provided in keyframe.");
     }
 
     for (let i = 0; i < keyframes.length - 1; i++) {
