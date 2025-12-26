@@ -12,7 +12,8 @@
     }
   },
   "scripts": {
-    "build:types": "vue-tsc -b ."
+    "build:types": "vue-tsc -b .",
+    "republish": "rm -rf dist && npm run build:types && npm publish"
   },
   "peerDependencies": {
     "vue": "^3.5.18"
